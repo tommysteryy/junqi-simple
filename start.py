@@ -1,4 +1,3 @@
-import sys
 from enum import Enum
 from datetime import datetime
  
@@ -38,20 +37,39 @@ class Game:
 
         print(f"Created a game log at {self.log_file_path}.")
     
-    def compare(self, card1, card2):
-        return "Did the compare"
+    def fightCard(self, card1, card2):
+        print("Did the compare")
+        return
     
     def logFight(self, card1, card2, largerCard):
-        return "Did the logging"
+        print("Did the logging")
+        return
+    
+    def playerWith(self, card, card1, card2):
+        """
+        card MUST BE one of card1 and card2
+        """
+        if (card == card1):
+            return self.player1
+        elif (card == card2):
+            return self.player2
+        else:
+            raise ValueError("Card being compared does not belong to either player1 or player2.")
+
 
     def compareAndLog(self, card1, card2):
-        largerCard = self.compare(card1, card2)
+        largerCard = self.fightCard(card1, card2)
         self.logFight(card1, card2, largerCard)
+        return self.playerWith(largerCard, card1, card2)
+
+    def endgame(self):
+        return
 
 
     def fight(self):
         print("===========================================\n")
         print("Waiting for a fight ... I will be here when you need! \n")
+        print("===========================================\n")
 
         player1_card = input(f"{self.player1}'s card (4 letters): ")
         player1_card_is_invalid = isInvalid(player1_card)
@@ -61,7 +79,7 @@ class Game:
             print(validCards)
             player1_card = input(f"{self.player1}'s card (4 letters): ")
             player1_card_is_invalid = isInvalid(player1_card) 
-        
+        print("===========================================\n")
 
         player2_card = input(f"{self.player2}'s card (4 letters): ")
         player2_card_is_invalid = isInvalid(player2_card)
@@ -71,35 +89,18 @@ class Game:
             print(validCards)
             player2_card = input(f"{self.player2}'s card (4 letters): ")
             player2_card_is_invalid = isInvalid(player2_card) 
+        
+        print("===========================================\n")
              
-        self.compareAndLog(player1_card, player2_card)
+        winner = self.compareAndLog(player1_card, player2_card)
+        print(f"For this fight, {winner} won the fight.")
+        print("===========================================\n")
 
-
-                
-
-
+        if self.gameover == True:
+            self.endgame()
+        else:
+            self.fight()
         
-        
-
-
-# # total arguments
-# n = len(sys.argv)
-# print("Total arguments passed:", n)
- 
-# # Arguments passed
-# print("\nName of Python script:", sys.argv[0])
- 
-# print("\nArguments passed:", end = " ")
-# for i in range(1, n):
-#     print(sys.argv[i], end = " ")
-     
-# # Addition of numbers
-# Sum = 0
-# # Using argparse module
-# for i in range(1, n):
-#     Sum += int(sys.argv[i])
-     
-# print("\n\nResult:", Sum)
 
 def game_init():
     p1 = input("What is the first player's name? \n")
@@ -107,9 +108,6 @@ def game_init():
     game = Game(p1, p2)
     print(f"Created a new junqi game with {p1} and {p2}")
     return game
-    
-
-
 
 
 if __name__ == "__main__":
