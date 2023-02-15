@@ -15,6 +15,11 @@ class Cards(Enum):
     zhda = 10
     dile = 11
 
+class Player(Enum):
+    self_destruct = 0
+    player1 = 1
+    player2 = 2
+
 validCards = [e.name for e in Cards]
 
 def isInvalid(card):
@@ -38,7 +43,74 @@ class Game:
         print(f"Created a game log at {self.log_file_path}.")
     
     def fightCard(self, card1, card2):
-        print("Did the compare")
+
+        """
+        returns either Player.player1, Player.player2 or Player.self_destruct
+        """
+
+        if (card1 == None) or (card2 == None):
+            raise ValueError("One of the cards is not right, please try again.")
+        
+        if (card1 == Cards.juqi):
+            return Player.player2
+        elif (card2 == Cards.juqi):
+            return Player.player1
+        elif (card1 == card2):
+            return Player.self_destruct
+        elif (card1 == Cards.zhda) or (card2 == Cards.zhda):
+            return Player.self_destruct
+        
+        """
+            function fight(blackCard: string, redCard: string): Player {
+
+                const blackCardSize = cardIndex.get(blackCard);
+                const redCardSize = cardIndex.get(redCard);
+
+                if (!blackCardSize || !redCardSize) {
+                    throw new Error("One of the black or red cards is invalid. Please check again.");
+                }
+
+                if ((blackCardSize === Cards.JUNQI) || (redCardSize === Cards.JUNQI)) {
+                    return (blackCardSize === Cards.JUNQI) ? Player.RED_WIN : Player.BLACK_WIN;
+                } else if (blackCardSize === redCardSize) {
+                    return Player.SELFDESTRUCT;
+                } else if ((blackCardSize === Cards.ZHADAN || redCardSize === Cards.ZHADAN)) {
+                    return Player.SELFDESTRUCT;
+                } else if ((blackCardSize === Cards.GONGBING || redCardSize === Cards.GONGBING)) {
+                    return fightWithGongBing(blackCardSize, redCardSize);
+                } else {
+                    // should be no gongbing, dilei, or zhadan, just cards to compare sizes
+                    return fightSimple(blackCardSize, redCardSize);
+                }
+            }
+
+            function fightWithGongBing(blackCardSize: number, redCardSize: number): Player {
+                if (blackCardSize === Cards.GONGBING) {
+                    if (redCardSize === Cards.DILEI) {
+                        return Player.BLACK_BIGGER;
+                    }
+                } else {
+                    if (blackCardSize === Cards.DILEI) {
+                        return Player.RED_BIGGER;
+                    }
+                }
+                return fightSimple(blackCardSize, redCardSize);
+            }
+
+
+            function fightSimple(blackCardSize: number, redCardSize: number): Player {
+                if (blackCardSize > redCardSize) {
+                    return Player.BLACK_BIGGER;
+                } else if (blackCardSize < redCardSize) {
+                    return Player.RED_BIGGER;
+                } else {
+                    return Player.SELFDESTRUCT;
+                }
+            }
+        
+        """
+
+
         return
     
     def logFight(self, card1, card2, largerCard):
@@ -58,9 +130,15 @@ class Game:
 
 
     def compareAndLog(self, card1, card2):
-        largerCard = self.fightCard(card1, card2)
-        self.logFight(card1, card2, largerCard)
-        return self.playerWith(largerCard, card1, card2)
+        
+        ## This method will all use Card enum() types.
+
+        player1_card = Cards[card1]
+        player2_card = Cards[card2]
+
+        winner = self.fightCard(player1_card, player2_card)
+        self.logFight(player1_card, player2_card, winner)
+        return winner
 
     def endgame(self):
         return
