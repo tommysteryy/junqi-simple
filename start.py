@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import datetime
+from getpass import getpass
  
 class Cards(Enum):
     juqi = -1
@@ -149,23 +150,23 @@ class Game:
         print("Waiting for a fight ... I will be here when you need! \n")
         print("===========================================\n")
 
-        player1_card = input(f"{self.player1}'s card (4 letters): ")
+        player1_card = getpass(f"{self.player1}'s card (4 letters): ")
         player1_card_is_invalid = isInvalid(player1_card)
 
         while player1_card_is_invalid:
             print(f"{self.player1}, your card is invalid. Your card must be in the format of one of")
             print(validCards)
-            player1_card = input(f"{self.player1}'s card (4 letters): ")
+            player1_card = getpass(f"{self.player1}'s card (4 letters): ")
             player1_card_is_invalid = isInvalid(player1_card) 
         print("===========================================\n")
 
-        player2_card = input(f"{self.player2}'s card (4 letters): ")
+        player2_card = getpass(f"{self.player2}'s card (4 letters): ")
         player2_card_is_invalid = isInvalid(player2_card)
 
         while player2_card_is_invalid:
             print(f"{self.player2}, your card is invalid. Your card must be in the format of one of")
             print(validCards)
-            player2_card = input(f"{self.player2}'s card (4 letters): ")
+            player2_card = getpass(f"{self.player2}'s card (4 letters): ")
             player2_card_is_invalid = isInvalid(player2_card) 
         
         print("===========================================\n")
