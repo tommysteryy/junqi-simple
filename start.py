@@ -35,6 +35,7 @@ class Game:
         self.player2 = player2
         self.gameover = False
         self.winner = None
+        self.gameCycleCounter = 0
 
     def startlog(self):
         now = datetime.now()
@@ -70,6 +71,25 @@ class Game:
                 return Player.player2
         
         return self.fightSimple(card1, card2)
+    
+    def fightWithDiLei(self, card1, card2):
+        """
+        Returns the winner of a fight when one of card1/card2 is a dilei. One of card1 and card2 must be.
+        """
+        if (card1 == Cards.dile):
+            if (card2 == Cards.gobi):
+                return Player.player2
+            elif (card2 == Cards.zhda):
+                return Player.self_destruct
+            else:
+                return Player.player1
+        else:
+            if (card1 == Cards.gobi):
+                return Player.player1
+            elif (card1 == Cards.zhda):
+                return Player.self_destruct
+            else:
+                return Player.player2
         
     def fightCard(self, card1, card2):
 
@@ -92,17 +112,31 @@ class Game:
             return Player.self_destruct
         elif (card1 == Cards.zhda) or (card2 == Cards.zhda):
             return Player.self_destruct
-        elif (card1 == Cards.gobi) or (card2 == Cards.gobi):
-            return self.fightWithGongBing(card1, card2)
         elif (card1 == Cards.dile) or (card2 == Cards.dile):
-            ## don't need to worry about dilei and gongbing case
-            return Player.self_destruct
+            return self.fightWithDiLei(card1, card2)
         else:
-            ## will only have from PaiZhang to SiLing left, can do direct compare
+            ## will only have from gongbing to SiLing left, can do direct compare
             return self.fightSimple(card1, card2)
+        
+    def playerName(self, player):
+        if (player == Player.player1):
+            return self.player1
+        elif (player == Player.player2):
+            return self.player2
+        else:
+            return "SELF DESTRUCT"
     
-    def logFight(self, card1, card2, largerCard):
-        return
+    def logFight(self, card1, card2, winner):
+        """
+        Logs one fight between two cards, recording time, fight#, and winner.
+        """
+
+        with open(self.log_file_path, "a") as log:
+            log.write(datetime.now().strftime("%m-%d-%Y_%H:%M:%S"))
+            log.write(f" Game Fight {self.gameCycleCounter}:\n")
+            log.write(f"{self.player1}'s card: {card1.name} \t {self.player2}'s card: {card2.name}\n")
+            log.write(f"The winner declared is: {self.playerName(winner)}")
+            log.write("\n\n")
     
     def playerWith(self, card, card1, card2):
         """
@@ -118,13 +152,18 @@ class Game:
 
     def compareAndLog(self, card1, card2):
         
-        ## This method will all use Card enum() types.
+        """
+        Transforms card1, card2 from strings to Cards. Then, completes the fight and the logging.
+        """
 
         player1_card = Cards[card1]
         player2_card = Cards[card2]
 
         winner = self.fightCard(player1_card, player2_card)
+        self.gameCycleCounter += 1
+        
         self.logFight(player1_card, player2_card, winner)
+
         return winner
 
     def endgame(self):
@@ -136,24 +175,20 @@ class Game:
         """
         @param winner: Player
         """
-        winnerName = ""
-        messageAppender = ""
-        if (winner == Player.player1):
-            winnerName = self.player1
-        elif (winner == Player.player2):
-            winnerName = self.player2
-        else:
-            winnerName = "NO ONE"
-            messageAppender = "Your cards self-destructed."
+        winnerName = self.playerName(winner)
 
         print("\n==============================================================")
         print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n")
-        print(f"For this fight, {winnerName} won. " + messageAppender)
+        print("RESULT:")
+        if winnerName == "SELF DESTRUCT":
+            print(f"{winnerName}.")
+        else:
+            print(f"{winnerName} won.")
         print("\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         print("==============================================================")
 
         if self.gameover != True:
-            time.sleep(2)
+            time.sleep(1.5)
         
 
     def fight(self):
