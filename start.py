@@ -42,48 +42,22 @@ class Game:
         self.log_file.close()
 
         print(f"Created a game log at {self.log_file_path}.")
-    
-    def fightCard(self, card1, card2):
 
+    def fightSimple(self, card1, card2):
         """
-        returns either Player.player1, Player.player2 or Player.self_destruct
+        Returns the winner of a fight where no special conditions apply, 
+                and you can just compare sizes of the cards
         """
-
-        if (card1 == None) or (card2 == None):
-            raise ValueError("One of the cards is not right, please try again.")
-        
-        if (card1 == Cards.juqi):
-            return Player.player2
-        elif (card2 == Cards.juqi):
+        if (card1.value > card2.value):
             return Player.player1
-        elif (card1 == card2):
+        elif (card1.value < card2.value):
+            return Player.player2
+        else:
             return Player.self_destruct
-        elif (card1 == Cards.zhda) or (card2 == Cards.zhda):
-            return Player.self_destruct
-        
+
+    def fightWithGongBing(self, card1, card2):
         """
-            function fight(blackCard: string, redCard: string): Player {
-
-                const blackCardSize = cardIndex.get(blackCard);
-                const redCardSize = cardIndex.get(redCard);
-
-                if (!blackCardSize || !redCardSize) {
-                    throw new Error("One of the black or red cards is invalid. Please check again.");
-                }
-
-                if ((blackCardSize === Cards.JUNQI) || (redCardSize === Cards.JUNQI)) {
-                    return (blackCardSize === Cards.JUNQI) ? Player.RED_WIN : Player.BLACK_WIN;
-                } else if (blackCardSize === redCardSize) {
-                    return Player.SELFDESTRUCT;
-                } else if ((blackCardSize === Cards.ZHADAN || redCardSize === Cards.ZHADAN)) {
-                    return Player.SELFDESTRUCT;
-                } else if ((blackCardSize === Cards.GONGBING || redCardSize === Cards.GONGBING)) {
-                    return fightWithGongBing(blackCardSize, redCardSize);
-                } else {
-                    // should be no gongbing, dilei, or zhadan, just cards to compare sizes
-                    return fightSimple(blackCardSize, redCardSize);
-                }
-            }
+        Returns the winner of a fight (@Player) where one of card1/card2 is a gongbing
 
             function fightWithGongBing(blackCardSize: number, redCardSize: number): Player {
                 if (blackCardSize === Cards.GONGBING) {
@@ -97,22 +71,43 @@ class Game:
                 }
                 return fightSimple(blackCardSize, redCardSize);
             }
-
-
-            function fightSimple(blackCardSize: number, redCardSize: number): Player {
-                if (blackCardSize > redCardSize) {
-                    return Player.BLACK_BIGGER;
-                } else if (blackCardSize < redCardSize) {
-                    return Player.RED_BIGGER;
-                } else {
-                    return Player.SELFDESTRUCT;
-                }
-            }
+        """
+        if (card1 == Cards.gobi):
+            if (card2 == Cards.dile):
+                return Player.player1
+        else:
+            if (card1 == Cards.dile):
+                return Player.player2
         
+        return self.fightSimple(card1, card2)
+        
+    def fightCard(self, card1, card2):
+
+        """
+        returns either Player.player1, Player.player2 or Player.self_destruct
         """
 
+        if (card1 == None) or (card2 == None):
+            raise ValueError("One of the cards is not right, please try again.")
 
-        return
+        if (card1 == Cards.juqi):
+            self.gameover == True
+            return Player.player2
+        elif (card2 == Cards.juqi):
+            self.gameover == True
+            return Player.player1
+        elif (card1 == card2):
+            return Player.self_destruct
+        elif (card1 == Cards.zhda) or (card2 == Cards.zhda):
+            return Player.self_destruct
+        elif (card1 == Cards.gobi) or (card2 == Cards.gobi):
+            return self.fightWithGongBing(card1, card2)
+        elif (card1 == Cards.dile) or (card2 == Cards.dile):
+            ## don't need to worry about dilei and gongbing case
+            return Player.self_destruct
+        else:
+            ## will only have from PaiZhang to SiLing left, can do direct compare
+            return self.fightSimple(card1, card2)
     
     def logFight(self, card1, card2, largerCard):
         print("Did the logging")
@@ -144,6 +139,20 @@ class Game:
     def endgame(self):
         return
 
+    def printWinner(self, winner):
+        """
+        @param winner: Player
+        """
+        winnerName = ""
+        messageAppender = ""
+        if (winner == Player.player1):
+            winnerName = self.player1
+        elif (winner == Player.player2):
+            winnerName = self.player2
+        else:
+            winnerName = "NO ONE"
+            messageAppender = "Your cards self-destructed."
+        print(f"For this fight, {winnerName} won. " + messageAppender)
 
     def fight(self):
         print("===========================================\n")
@@ -155,7 +164,7 @@ class Game:
 
         while player1_card_is_invalid:
             print(f"{self.player1}, your card is invalid. Your card must be in the format of one of")
-            print(validCards)
+            print(validCards + "\n")
             player1_card = getpass(f"{self.player1}'s card (4 letters): ")
             player1_card_is_invalid = isInvalid(player1_card) 
         print("===========================================\n")
@@ -165,15 +174,15 @@ class Game:
 
         while player2_card_is_invalid:
             print(f"{self.player2}, your card is invalid. Your card must be in the format of one of")
-            print(validCards)
+            print(validCards + "\n")
             player2_card = getpass(f"{self.player2}'s card (4 letters): ")
             player2_card_is_invalid = isInvalid(player2_card) 
         
         print("===========================================\n")
              
         winner = self.compareAndLog(player1_card, player2_card)
-        print(f"For this fight, {winner} won the fight.")
-        print("===========================================\n")
+
+        self.printWinner(winner)
 
         if self.gameover == True:
             self.endgame()
