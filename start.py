@@ -1,6 +1,8 @@
 from enum import Enum
 from datetime import datetime
+import time
 from getpass import getpass
+import pyfiglet
  
 class Cards(Enum):
     juqi = -1
@@ -32,12 +34,13 @@ class Game:
         self.player1 = player1
         self.player2 = player2
         self.gameover = False
+        self.winner = None
 
     def startlog(self):
         now = datetime.now()
         dt_string = now.strftime("%m-%d-%Y_%H:%M:%S")
 
-        self.log_file_path = f"gamelogs/{self.player1}_{self.player2}_{dt_string}"
+        self.log_file_path = f"gamelogs/{self.player1}_{self.player2}_{dt_string}.txt"
         self.log_file = open(self.log_file_path, "w")
         self.log_file.close()
 
@@ -58,19 +61,6 @@ class Game:
     def fightWithGongBing(self, card1, card2):
         """
         Returns the winner of a fight (@Player) where one of card1/card2 is a gongbing
-
-            function fightWithGongBing(blackCardSize: number, redCardSize: number): Player {
-                if (blackCardSize === Cards.GONGBING) {
-                    if (redCardSize === Cards.DILEI) {
-                        return Player.BLACK_BIGGER;
-                    }
-                } else {
-                    if (blackCardSize === Cards.DILEI) {
-                        return Player.RED_BIGGER;
-                    }
-                }
-                return fightSimple(blackCardSize, redCardSize);
-            }
         """
         if (card1 == Cards.gobi):
             if (card2 == Cards.dile):
@@ -91,10 +81,12 @@ class Game:
             raise ValueError("One of the cards is not right, please try again.")
 
         if (card1 == Cards.juqi):
-            self.gameover == True
+            self.gameover = True
+            self.winner = self.player2
             return Player.player2
         elif (card2 == Cards.juqi):
-            self.gameover == True
+            self.gameover = True
+            self.winner = self.player1
             return Player.player1
         elif (card1 == card2):
             return Player.self_destruct
@@ -110,7 +102,6 @@ class Game:
             return self.fightSimple(card1, card2)
     
     def logFight(self, card1, card2, largerCard):
-        print("Did the logging")
         return
     
     def playerWith(self, card, card1, card2):
@@ -137,6 +128,8 @@ class Game:
         return winner
 
     def endgame(self):
+        print(pyfiglet.figlet_format("GAME OVER!"))
+        print(pyfiglet.figlet_format(f"{self.winner} wins!"))
         return
 
     def printWinner(self, winner):
@@ -152,7 +145,16 @@ class Game:
         else:
             winnerName = "NO ONE"
             messageAppender = "Your cards self-destructed."
+
+        print("\n==============================================================")
+        print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n")
         print(f"For this fight, {winnerName} won. " + messageAppender)
+        print("\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+        print("==============================================================")
+
+        if self.gameover != True:
+            time.sleep(2)
+        
 
     def fight(self):
         print("===========================================\n")
@@ -164,7 +166,8 @@ class Game:
 
         while player1_card_is_invalid:
             print(f"{self.player1}, your card is invalid. Your card must be in the format of one of")
-            print(validCards + "\n")
+            print(validCards)
+            print("\n")
             player1_card = getpass(f"{self.player1}'s card (4 letters): ")
             player1_card_is_invalid = isInvalid(player1_card) 
         print("===========================================\n")
@@ -174,7 +177,8 @@ class Game:
 
         while player2_card_is_invalid:
             print(f"{self.player2}, your card is invalid. Your card must be in the format of one of")
-            print(validCards + "\n")
+            print(validCards)
+            print("\n")
             player2_card = getpass(f"{self.player2}'s card (4 letters): ")
             player2_card_is_invalid = isInvalid(player2_card) 
         
@@ -185,9 +189,9 @@ class Game:
         self.printWinner(winner)
 
         if self.gameover == True:
-            self.endgame()
+            return self.endgame()
         else:
-            self.fight()
+            return self.fight()
         
 
 def game_init():
