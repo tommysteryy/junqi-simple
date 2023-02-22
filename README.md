@@ -1,11 +1,11 @@
 # Junqi CLI *"Jun"*
-A simple command-line "referee", *Jun*, for the traditional Chinese game 军旗 (junqi)
+A simple command-line "referee", *Jun*, for the traditional Chinese game 军棋 (junqi)
 
 ## Motivation
-For whatever reason, the more popular games in my asian culture are two-player-ed; while popular games in western culture seem to be much more multiplayer-ed. Many of my games, I can just play with my girlfriend 1-on-1, but one of her favourites, 军旗 REQUIRES a third-party "referee" to progress the game. This is for you, love!
+For whatever reason, the more popular games in my asian culture are two-player-ed; while popular games in western culture seem to be much more multiplayer-ed. Many of my games, I can just play with my girlfriend 1-on-1, but one of her favourites, 军棋 REQUIRES a third-party "referee" to progress the game. This is for you, love!
 
-## What is 军旗？
-军旗, pronounced "jew-n ch-ee", is a traditional, 2-player, highly-tactical board game that challenges both players to play a game of war **without ever knowing each other's pieces**. 
+## What is 军棋？
+军棋, pronounced "jew-n ch-ee", is a traditional, 2-player, highly-tactical board game that challenges both players to play a game of war **without ever knowing each other's pieces**. 
 
 ![Picture of the junqi board](https://images-na.ssl-images-amazon.com/images/I/51j1UanSMXL.jpg "Typical setup for Junqi")
 
@@ -34,9 +34,9 @@ You can find out a lot more about specific rules, how to setup, and even how to 
 
 ## How to Use *Jun*
 
-### Set up
+### Set up (for first time users)
 `make jun`
 
-## Start game
+### Start game
 `make start`
 
